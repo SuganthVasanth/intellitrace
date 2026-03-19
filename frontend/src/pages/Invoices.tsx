@@ -5,8 +5,8 @@ const Invoices = () => (
   <DashboardLayout>
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Invoice Verification</h2>
-        <p className="text-sm text-muted-foreground mt-1 font-mono">Automated duplicate & anomaly detection</p>
+        <h2 className="text-2xl font-bold tracking-tight">Invoice Authentication</h2>
+        <p className="text-sm text-muted-foreground mt-1 font-mono">AI-powered duplicate, shell company & inflation detection</p>
       </div>
       <InvoiceTable />
     </div>

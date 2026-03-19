@@ -42,13 +42,13 @@ export const transactions: Transaction[] = [
 ];
 
 export const alerts: Alert[] = [
-  { id: "ALT001", type: "circular_trade", severity: "critical", message: "Circular trading detected: Nova → Phoenix → Ghost → Nova", entityId: "S002", entityName: "Nova Trading Co", timestamp: "2025-02-27T10:23:00Z", resolved: false },
-  { id: "ALT002", type: "shell_company", severity: "critical", message: "Ghost Enterprises shares bank account and address with Apex Industries", entityId: "S008", entityName: "Ghost Enterprises LLC", timestamp: "2025-02-27T09:45:00Z", resolved: false },
-  { id: "ALT003", type: "duplicate_invoice", severity: "high", message: "Duplicate invoice NVT-2025-042 submitted by Phoenix Exports", entityId: "S003", entityName: "Phoenix Exports Pvt", timestamp: "2025-02-27T08:12:00Z", resolved: false },
-  { id: "ALT004", type: "inflated_amount", severity: "high", message: "Invoice GHT-2025-001 amount ₹45L exceeds 3x historical average", entityId: "S008", entityName: "Ghost Enterprises LLC", timestamp: "2025-02-26T16:30:00Z", resolved: false },
-  { id: "ALT005", type: "shared_bank", severity: "medium", message: "Delta Fabricators and Echo Trading share bank account BOB-5006-2233", entityId: "S006", entityName: "Delta Fabricators", timestamp: "2025-02-26T14:15:00Z", resolved: true },
-  { id: "ALT006", type: "circular_trade", severity: "high", message: "Bidirectional trading detected between Delta and Echo", entityId: "S011", entityName: "Echo Trading Intl", timestamp: "2025-02-26T11:00:00Z", resolved: false },
-  { id: "ALT007", type: "inflated_amount", severity: "medium", message: "Invoice DLT-2025-008 amount ₹23.4L is 2.1x average", entityId: "S006", entityName: "Delta Fabricators", timestamp: "2025-02-25T09:20:00Z", resolved: true },
+  { id: "ALT001", type: "circular_trade", severity: "critical", message: "Circular trading detected: Nova → Phoenix → Ghost → Nova (Value: ₹1.65Cr)", entityId: "S002", entityName: "Nova Trading Co", timestamp: "2025-02-27T10:23:00Z", resolved: false },
+  { id: "ALT002", type: "shell_company", severity: "critical", message: "Potential Shell Company: Ghost Enterprises shares HDFC-1001-4532 with Apex Industries", entityId: "S008", entityName: "Ghost Enterprises LLC", timestamp: "2025-02-27T09:45:00Z", resolved: false },
+  { id: "ALT003", type: "duplicate_invoice", severity: "high", message: "Duplicate Invoice Match: NVT-2025-042 submitted by Phoenix & Nova", entityId: "S003", entityName: "Phoenix Exports Pvt", timestamp: "2025-02-27T08:12:00Z", resolved: false },
+  { id: "ALT004", type: "inflated_amount", severity: "high", message: "Inflated Billing: Invoice GHT-2025-001 (₹45L) is 340% higher than average for S008", entityId: "S008", entityName: "Ghost Enterprises LLC", timestamp: "2025-02-26T16:30:00Z", resolved: false },
+  { id: "ALT005", type: "shared_bank", severity: "medium", message: "Shared Infrastructure: Delta & Echo share bank account BOB-5006-2233", entityId: "S006", entityName: "Delta Fabricators", timestamp: "2025-02-26T14:15:00Z", resolved: true },
+  { id: "ALT006", type: "circular_trade", severity: "high", message: "Bidirectional trading detected between Delta Fabricators and Echo Trading Intl", entityId: "S011", entityName: "Echo Trading Intl", timestamp: "2025-02-26T11:00:00Z", resolved: false },
+  { id: "ALT007", type: "inflated_amount", severity: "medium", message: "Price Anomaly: Invoice DLT-2025-008 unit price 2.1x market standard", entityId: "S006", entityName: "Delta Fabricators", timestamp: "2025-02-25T09:20:00Z", resolved: true },
 ];
 
 export const networkNodes: NetworkNode[] = [

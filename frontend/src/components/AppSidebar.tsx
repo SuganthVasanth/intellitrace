@@ -21,8 +21,8 @@ export function AppSidebar() {
             <Shield className="h-4.5 w-4.5 text-primary" />
           </div>
           <div>
-            <h1 className="text-sm font-bold tracking-tight">FraudShield</h1>
-            <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">AI Detection</p>
+            <h1 className="text-sm font-bold tracking-tight">FraudShield 360°</h1>
+            <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest">Real-time Detection</p>
           </div>
         </div>
       </div>
