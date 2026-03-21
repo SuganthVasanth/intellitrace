@@ -8,7 +8,9 @@ import Suppliers from "./pages/Suppliers";
 import Invoices from "./pages/Invoices";
 import NetworkPage from "./pages/Network";
 import Alerts from "./pages/Alerts";
+import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -17,13 +19,22 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
+      <BrowserRouter 
+        basename="/intellitrace"
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
         <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/suppliers" element={<Suppliers />} />
-          <Route path="/invoices" element={<Invoices />} />
-          <Route path="/network" element={<NetworkPage />} />
-          <Route path="/alerts" element={<Alerts />} />
+          <Route path="/login" element={<Login />} />
+          <Route element={<ProtectedRoute />}>
+            <Route path="/" element={<Index />} />
+            <Route path="/suppliers" element={<Suppliers />} />
+            <Route path="/invoices" element={<Invoices />} />
+            <Route path="/network" element={<NetworkPage />} />
+            <Route path="/alerts" element={<Alerts />} />
+          </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

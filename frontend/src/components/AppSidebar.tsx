@@ -1,6 +1,10 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { LayoutDashboard, Users, FileText, Network, AlertTriangle, Shield } from "lucide-react";
+import { LayoutDashboard, Users, FileText, Network, AlertTriangle, Shield, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
+import GoogleLoginButton from "./GoogleLoginButton";
+import { useAuth } from "@/hooks/AuthContext";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 
 const navItems = [
   { to: "/", icon: LayoutDashboard, label: "Dashboard" },
@@ -12,6 +16,7 @@ const navItems = [
 
 export function AppSidebar() {
   const location = useLocation();
+  const { user, login, logout } = useAuth();
 
   return (
     <aside className="fixed left-0 top-0 h-screen w-56 bg-sidebar border-r border-sidebar-border flex flex-col z-50">
@@ -47,8 +52,36 @@ export function AppSidebar() {
         })}
       </nav>
 
-      <div className="p-4 border-t border-sidebar-border">
-        <div className="glass-panel rounded-md p-3">
+      <div className="p-4 border-t border-sidebar-border space-y-3">
+        {user ? (
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-3 px-2">
+              <Avatar className="h-8 w-8 border border-sidebar-border">
+                <AvatarImage src={user.picture} alt={user.name} />
+                <AvatarFallback className="text-[10px]">{user.name.charAt(0)}</AvatarFallback>
+              </Avatar>
+              <div className="flex-1 overflow-hidden">
+                <p className="text-xs font-medium truncate">{user.name}</p>
+                <p className="text-[10px] text-muted-foreground truncate">{user.email}</p>
+              </div>
+            </div>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="w-full justify-start gap-3 text-muted-foreground hover:text-foreground"
+              onClick={logout}
+            >
+              <LogOut className="h-4 w-4" />
+              <span className="text-xs">Logout</span>
+            </Button>
+          </div>
+        ) : (
+          <div className="px-2">
+            <p className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground text-center">Guest Access</p>
+          </div>
+        )}
+
+        <div className="glass-panel rounded-md p-3 mt-2">
           <p className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground mb-1">System Status</p>
           <div className="flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-risk-low risk-pulse" />
