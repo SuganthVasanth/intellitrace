@@ -1,0 +1,18 @@
+# Top-level dependencies
+node_modules/
+.npm/
+
+# Backend specific
+backend/node_modules/
+backend/.env
+backend/intellitrace.json
+
+# Frontend specific
+frontend/node_modules/
+frontend/dist/
+
+# OS/IDE files
+.DS_Store
+.vscode/
+.idea/
+*.log

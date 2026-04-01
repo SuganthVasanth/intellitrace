@@ -1,23 +1,52 @@
-import { invoices } from "@/lib/mock-data";
-import { InvoiceFlag } from "@/lib/types";
+import { useEffect, useState } from "react";
+import { Invoice, InvoiceFlag } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 const flagLabels: Record<InvoiceFlag, { label: string; color: string }> = {
-  duplicate: { label: "DUPLICATE", color: "bg-risk-critical/15 text-risk-critical" },
-  inflated: { label: "INFLATED", color: "bg-risk-high/15 text-risk-high" },
-  shell_company: { label: "SHELL CO", color: "bg-risk-critical/15 text-risk-critical" },
-  circular_trade: { label: "CIRCULAR", color: "bg-chart-5/15 text-chart-5" },
-  clean: { label: "CLEAN", color: "bg-risk-low/15 text-risk-low" },
+  duplicate:      { label: "DUPLICATE", color: "bg-risk-critical/15 text-risk-critical" },
+  inflated:       { label: "INFLATED",  color: "bg-risk-high/15 text-risk-high" },
+  shell_company:  { label: "SHELL CO",  color: "bg-risk-critical/15 text-risk-critical" },
+  circular_trade: { label: "CIRCULAR",  color: "bg-chart-5/15 text-chart-5" },
+  clean:          { label: "CLEAN",     color: "bg-risk-low/15 text-risk-low" },
 };
 
 function formatCurrency(n: number) {
   if (n >= 1000000) return `₹${(n / 1000000).toFixed(1)}M`;
-  if (n >= 100000) return `₹${(n / 100000).toFixed(1)}L`;
+  if (n >= 100000)  return `₹${(n / 100000).toFixed(1)}L`;
   return `₹${n.toLocaleString("en-IN")}`;
 }
 
 export function InvoiceTable() {
-  const sorted = [...invoices].sort((a, b) => b.riskScore - a.riskScore);
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [loading, setLoading]   = useState(true);
+  const [error, setError]       = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("/api/invoices")
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then((data: Invoice[]) => setInvoices(data))
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="glass-panel rounded-lg p-8 text-center">
+        <span className="font-mono text-xs text-muted-foreground animate-pulse">Loading invoices…</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="glass-panel rounded-lg p-8 text-center">
+        <span className="font-mono text-xs text-risk-critical">Error: {error}</span>
+      </div>
+    );
+  }
 
   return (
     <div className="glass-panel rounded-lg overflow-hidden">
@@ -37,7 +66,7 @@ export function InvoiceTable() {
             </tr>
           </thead>
           <tbody>
-            {sorted.map((inv, i) => (
+            {invoices.map((inv, i) => (
               <tr key={inv.id} className={cn("border-b border-border/50 transition-colors hover:bg-accent/50", i % 2 === 0 && "bg-card/30")}>
                 <td className="px-4 py-3 font-mono text-xs">{inv.invoiceNumber}</td>
                 <td className="px-4 py-3 font-medium text-sm">{inv.supplierName}</td>
@@ -46,9 +75,9 @@ export function InvoiceTable() {
                 <td className="px-4 py-3 text-center">
                   <span className={cn("font-mono font-bold", {
                     "text-risk-critical": inv.riskScore >= 80,
-                    "text-risk-high": inv.riskScore >= 60 && inv.riskScore < 80,
-                    "text-risk-medium": inv.riskScore >= 30 && inv.riskScore < 60,
-                    "text-risk-low": inv.riskScore < 30,
+                    "text-risk-high":     inv.riskScore >= 60 && inv.riskScore < 80,
+                    "text-risk-medium":   inv.riskScore >= 30 && inv.riskScore < 60,
+                    "text-risk-low":      inv.riskScore < 30,
                   })}>{inv.riskScore}</span>
                 </td>
                 <td className="px-4 py-3">

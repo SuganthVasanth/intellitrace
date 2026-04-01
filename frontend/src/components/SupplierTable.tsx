@@ -1,9 +1,39 @@
-import { suppliers } from "@/lib/mock-data";
+import { useEffect, useState } from "react";
+import { Supplier } from "@/lib/types";
 import { RiskBadge } from "./RiskBadge";
 import { cn } from "@/lib/utils";
 
 export function SupplierTable() {
-  const sorted = [...suppliers].sort((a, b) => b.riskScore - a.riskScore);
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("/api/suppliers")
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then((data: Supplier[]) => setSuppliers(data))
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="glass-panel rounded-lg p-8 text-center">
+        <span className="font-mono text-xs text-muted-foreground animate-pulse">Loading suppliers…</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="glass-panel rounded-lg p-8 text-center">
+        <span className="font-mono text-xs text-risk-critical">Error: {error}</span>
+      </div>
+    );
+  }
 
   return (
     <div className="glass-panel rounded-lg overflow-hidden">
@@ -25,7 +55,7 @@ export function SupplierTable() {
             </tr>
           </thead>
           <tbody>
-            {sorted.map((s, i) => (
+            {suppliers.map((s, i) => (
               <tr key={s.id} className={cn("border-b border-border/50 transition-colors hover:bg-accent/50", i % 2 === 0 && "bg-card/30")}>
                 <td className="px-4 py-3 font-mono text-xs text-muted-foreground">{s.id}</td>
                 <td className="px-4 py-3 font-medium">{s.companyName}</td>

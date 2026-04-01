@@ -1,4 +1,5 @@
 import { NavLink, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { LayoutDashboard, Users, FileText, Network, AlertTriangle, Shield, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import GoogleLoginButton from "./GoogleLoginButton";
@@ -16,7 +17,22 @@ const navItems = [
 
 export function AppSidebar() {
   const location = useLocation();
-  const { user, login, logout } = useAuth();
+  const { user, logout } = useAuth();
+  const [alertCount, setAlertCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    const fetchStats = () => {
+      fetch("/api/dashboard/stats")
+        .then((res) => res.json())
+        .then((data) => setAlertCount(data.alertsPending))
+        .catch(() => setAlertCount(null));
+    };
+
+    fetchStats();
+    // Refresh every 30 seconds to keep the badge current
+    const interval = setInterval(fetchStats, 30000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <aside className="fixed left-0 top-0 h-screen w-56 bg-sidebar border-r border-sidebar-border flex flex-col z-50">
@@ -44,8 +60,10 @@ export function AppSidebar() {
             )}>
               <item.icon className={cn("h-4 w-4", isActive && "text-primary")} />
               {item.label}
-              {item.label === "Alerts" && (
-                <span className="ml-auto text-[10px] font-mono bg-risk-critical/15 text-risk-critical px-1.5 py-0.5 rounded-sm">5</span>
+              {item.label === "Alerts" && alertCount !== null && alertCount > 0 && (
+                <span className="ml-auto text-[10px] font-mono bg-risk-critical/15 text-risk-critical px-1.5 py-0.5 rounded-sm">
+                  {alertCount}
+                </span>
               )}
             </NavLink>
           );
@@ -76,16 +94,18 @@ export function AppSidebar() {
             </Button>
           </div>
         ) : (
-          <div className="px-2">
-            <p className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground text-center">Guest Access</p>
+          <div className="px-2 text-center">
+             <p className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Guest Access</p>
           </div>
         )}
 
         <div className="glass-panel rounded-md p-3 mt-2">
           <p className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground mb-1">System Status</p>
           <div className="flex items-center gap-2">
-            <span className="h-2 w-2 rounded-full bg-risk-low risk-pulse" />
-            <span className="text-xs text-risk-low font-medium">Monitoring Active</span>
+            <span className={cn("h-2 w-2 rounded-full risk-pulse", alertCount && alertCount > 0 ? "bg-risk-high" : "bg-risk-low")} />
+            <span className={cn("text-xs font-medium", alertCount && alertCount > 0 ? "text-risk-high" : "text-risk-low")}>
+              {alertCount && alertCount > 0 ? "Action Required" : "Monitoring Active"}
+            </span>
           </div>
         </div>
       </div>

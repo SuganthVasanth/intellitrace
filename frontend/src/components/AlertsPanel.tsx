@@ -1,18 +1,57 @@
-import { alerts } from "@/lib/mock-data";
+import { useEffect, useState } from "react";
+import { Alert } from "@/lib/types";
 import { RiskBadge } from "./RiskBadge";
 import { AlertTriangle, Link2, Copy, TrendingUp, Building2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const typeIcons = {
-  circular_trade: Link2,
-  shell_company: Building2,
+  circular_trade:    Link2,
+  shell_company:     Building2,
   duplicate_invoice: Copy,
-  inflated_amount: TrendingUp,
-  shared_bank: Building2,
+  inflated_amount:   TrendingUp,
+  shared_bank:       Building2,
 };
 
 export function AlertsPanel() {
+  const [alerts, setAlerts]   = useState<Alert[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError]     = useState<string | null>(null);
+
+  const fetchAlerts = () => {
+    fetch("/api/alerts")
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then((data: Alert[]) => setAlerts(data))
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => { fetchAlerts(); }, []);
+
+  const toggleResolve = async (id: string) => {
+    await fetch(`/api/alerts/${id}/resolve`, { method: "PATCH" });
+    fetchAlerts(); // re-fetch to update state
+  };
+
   const active = alerts.filter((a) => !a.resolved);
+
+  if (loading) {
+    return (
+      <div className="glass-panel rounded-lg p-8 text-center">
+        <span className="font-mono text-xs text-muted-foreground animate-pulse">Loading alerts…</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="glass-panel rounded-lg p-8 text-center">
+        <span className="font-mono text-xs text-risk-critical">Error: {error}</span>
+      </div>
+    );
+  }
 
   return (
     <div className="glass-panel rounded-lg overflow-hidden">
@@ -25,12 +64,17 @@ export function AlertsPanel() {
         {alerts.map((alert) => {
           const Icon = typeIcons[alert.type];
           return (
-            <div key={alert.id} className={cn("p-4 transition-colors hover:bg-accent/30", alert.resolved && "opacity-50")}>
+            <div
+              key={alert.id}
+              className={cn("p-4 transition-colors hover:bg-accent/30 cursor-pointer", alert.resolved && "opacity-50")}
+              onClick={() => toggleResolve(alert.id)}
+              title={alert.resolved ? "Click to unresolve" : "Click to resolve"}
+            >
               <div className="flex items-start gap-3">
                 <div className={cn("rounded-md p-1.5 mt-0.5", {
                   "bg-risk-critical/10 text-risk-critical": alert.severity === "critical",
-                  "bg-risk-high/10 text-risk-high": alert.severity === "high",
-                  "bg-risk-medium/10 text-risk-medium": alert.severity === "medium",
+                  "bg-risk-high/10 text-risk-high":         alert.severity === "high",
+                  "bg-risk-medium/10 text-risk-medium":     alert.severity === "medium",
                 })}>
                   <Icon className="h-3.5 w-3.5" />
                 </div>
